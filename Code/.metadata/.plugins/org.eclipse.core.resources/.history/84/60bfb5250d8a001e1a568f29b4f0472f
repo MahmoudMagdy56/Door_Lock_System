@@ -1,0 +1,207 @@
+/*
+ * main.c
+ *
+ *  Created on: Oct 16, 2023
+ *      Author: 20109
+ */
+
+#include "std_types.h"
+#include <avr/io.h>
+#include "ultrasonic.h"
+#include "lcd.h"
+#include "gpio.h"
+#include "adc.h"
+#include "avr/delay.h"
+void RED_LED_ON (void)
+{
+	GPIO_writePin(PORTC_ID,PIN0_ID,LOGIC_HIGH);
+}
+void GREEN_LED_ON (void)
+{
+	GPIO_writePin(PORTC_ID,PIN1_ID,LOGIC_HIGH);
+}
+void BUZZER_ON (void)
+{
+	GPIO_writePin(PORTC_ID,PIN5_ID,LOGIC_HIGH);
+}
+void RELAY12_ON (void)
+{
+	GPIO_writePin(PORTC_ID,PIN3_ID,LOGIC_HIGH);
+	GPIO_writePin(PORTC_ID,PIN4_ID,LOGIC_HIGH);
+}
+void RED_LED_OFF (void)
+{
+	GPIO_writePin(PORTC_ID,PIN0_ID,LOGIC_LOW);
+}
+void GREEN_LED_OFF (void)
+{
+	GPIO_writePin(PORTC_ID,PIN1_ID,LOGIC_LOW);
+}
+void BUZZER_OFF (void)
+{
+	GPIO_writePin(PORTC_ID,PIN5_ID,LOGIC_LOW);
+}
+void RELAY12_OFF (void)
+{
+	GPIO_writePin(PORTC_ID,PIN3_ID,LOGIC_LOW);
+	GPIO_writePin(PORTC_ID,PIN4_ID,LOGIC_LOW);
+}
+void BLUE_LED_ON (void)
+{
+	GPIO_writePin(PORTC_ID,PIN2_ID,LOGIC_HIGH);
+}
+void BLUE_LED_OFF (void)
+{
+	GPIO_writePin(PORTC_ID,PIN2_ID,LOGIC_LOW);
+}
+int main()
+{
+
+	uint16 distance = 0;
+	uint16 adc_value=0;
+
+	/* Enabling the global interrupt service */
+	SREG |= (1<<7);
+
+
+	ADC_init();
+
+	LCD_init();
+	GPIO_setupPinDirection(PORTC_ID,PIN5_ID,PIN_OUTPUT); /* BUZZER */
+	GPIO_setupPinDirection(PORTC_ID,PIN1_ID,PIN_OUTPUT); /* GREEN LED */
+	GPIO_setupPinDirection(PORTC_ID,PIN0_ID,PIN_OUTPUT); /* RED LED */
+	GPIO_setupPinDirection(PORTC_ID,PIN2_ID,PIN_OUTPUT); /* BLUE LED */
+	GPIO_setupPinDirection(PORTC_ID,PIN4_ID,PIN_OUTPUT); /* RELAY1 */
+	GPIO_setupPinDirection(PORTC_ID,PIN3_ID,PIN_OUTPUT); /* RELAY2 */
+	PORTC = 0;
+
+
+	ULTRASONIC_init();
+
+	LCD_displayStringRowColumn(0,3,"Welcome To");
+	LCD_displayStringRowColumn(1,3,"Ultrasonic ");
+	_delay_ms(3000);
+	LCD_clearScreen();
+	LCD_displayStringRowColumn(0,0,"Programmed By:");
+	LCD_displayStringRowColumn(1,0,"Mahmoud Magdy");
+	_delay_ms(3000);
+	LCD_clearScreen();
+	LCD_displayStringRowColumn(0,0,"Supervised By:");
+	LCD_displayStringRowColumn(1,0,"Dr.Eng/ Sahar");
+	_delay_ms(3000);
+	LCD_clearScreen();
+	LCD_displayStringRowColumn(0,0,"Loading.");
+	_delay_ms(700);
+	LCD_displayStringRowColumn(0,8,".");
+	_delay_ms(700);
+	LCD_displayStringRowColumn(0,9,".");
+	_delay_ms(700);
+	LCD_displayStringRowColumn(0,10,".");
+	_delay_ms(700);
+	LCD_displayStringRowColumn(0,11,".");
+	_delay_ms(700);
+	LCD_clearScreen();
+	LCD_displayString("Distance= ");
+	LCD_displayStringRowColumn(0,12," cm");
+	LCD_displayStringRowColumn(1,0,"ADC Value = ");
+
+	while(1){
+
+			distance = ULTRASONIC_readDistance();
+			LCD_moveCursor(0,10);
+			LCD_intgerToString(distance);
+
+
+			adc_value = ADC_readChannel(0);
+			LCD_moveCursor(1,12);
+			LCD_intgerToString(adc_value);
+			/*
+			if(distance < 10 )
+
+				LCD_displayString("  ");
+			else if (distance < 100)
+				LCD_displayString(" ");
+	*/
+			if((distance <=430) && (distance >=200 ))
+			{
+				BLUE_LED_ON();
+				GREEN_LED_OFF();
+				RED_LED_OFF();
+				RELAY12_OFF();
+				BUZZER_OFF();
+			}
+			else if((distance <200) && (distance >=100))
+			{
+				BLUE_LED_OFF();
+				GREEN_LED_ON();
+				RED_LED_OFF();
+				RELAY12_OFF();
+				BUZZER_OFF();
+			}
+			else if((distance <100) && (distance >=70))
+			{
+				BLUE_LED_OFF();
+				GREEN_LED_OFF();
+				RED_LED_ON();
+				RELAY12_ON();
+
+				BUZZER_ON();
+
+				_delay_ms(500);
+				RED_LED_OFF();
+				RELAY12_OFF();
+				BUZZER_OFF();
+				_delay_ms(1500);
+			}
+			else if((distance <70) && (distance >=50))
+			{
+				BLUE_LED_OFF();
+				GREEN_LED_OFF();
+				RED_LED_ON();
+				RELAY12_ON();
+				BUZZER_ON();
+				_delay_ms(500);
+				RED_LED_OFF();
+				RELAY12_OFF();
+				BUZZER_OFF();
+				_delay_ms(1000);
+			}
+			else if((distance <50) && (distance >=30))
+			{
+				BLUE_LED_OFF();
+				GREEN_LED_OFF();
+				RED_LED_ON();
+				RELAY12_ON();
+				BUZZER_ON();
+				_delay_ms(450);
+				RED_LED_OFF();
+				RELAY12_OFF();
+				BUZZER_OFF();
+				_delay_ms(700);
+			}
+			else if((distance <30) && (distance >=10))
+			{
+				BLUE_LED_OFF();
+				GREEN_LED_OFF();
+				RED_LED_ON();
+				RELAY12_ON();
+				BUZZER_ON();
+				_delay_ms(350);
+				RED_LED_OFF();
+				RELAY12_OFF();
+				BUZZER_OFF();
+				_delay_ms(350);
+			}
+			else if((distance <10) && (distance >= 0 ))
+			{
+				BLUE_LED_OFF();
+				GREEN_LED_OFF();
+				RED_LED_ON();
+				BUZZER_ON();
+				RELAY12_ON();
+				_delay_ms(100);
+				RELAY12_OFF();
+				_delay_ms(100);
+			}
+		}
+}

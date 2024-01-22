@@ -1,0 +1,20 @@
+20:40:57 **** Build of configuration Debug for project Door_Lock_System ****
+make all 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega32 Door_Lock_System.elf
+AVR Memory Usage
+----------------
+Device: atmega32
+
+Program:   14836 bytes (45.3% Full)
+(.text + .data + .bootloader)
+
+Data:        126 bytes (6.2% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+
+20:40:58 Build Finished. 0 errors, 0 warnings. (took 915ms)
+

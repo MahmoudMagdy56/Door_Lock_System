@@ -1,0 +1,77 @@
+/*
+ * main.c
+ *
+ *  Created on: Oct 16, 2023
+ *      Author: 20109
+ */
+
+#include "std_types.h"
+#include <avr/io.h>
+#include "ultrasonic.h"
+#include "lcd.h"
+#include "avr/delay.h"
+#include "adc.h"
+
+int main()
+{
+	uint16 distance = 0;
+
+	uint16 res_value;
+	ADC_init();
+	/* Enabling the global interrupt service */
+	SREG |= (1<<7);
+
+	LCD_init();
+
+	ULTRASONIC_init();
+
+	LCD_displayStringRowColumn(0,3,"Welcome To");
+	LCD_displayStringRowColumn(1,3,"Ultrasonic ");
+	_delay_ms(3000);
+	LCD_clearScreen();
+	LCD_displayStringRowColumn(0,0,"Programmed By:");
+	LCD_displayStringRowColumn(1,0,"Mahmoud Magdy");
+	_delay_ms(3000);
+	LCD_clearScreen();
+	LCD_displayStringRowColumn(0,0,"Programmed By:");
+	LCD_displayStringRowColumn(1,0,"Ahmed Tohamy");
+	_delay_ms(3000);
+	LCD_clearScreen();
+	LCD_displayStringRowColumn(0,0,"Programmed By:");
+	LCD_displayStringRowColumn(1,0,"Abdelrahman");
+	_delay_ms(3000);
+	LCD_clearScreen();
+	LCD_displayStringRowColumn(0,0,"Supervised By:");
+	LCD_displayStringRowColumn(1,0,"Dr.Eng/ Sahar");
+	_delay_ms(3000);
+	LCD_clearScreen();
+	LCD_displayStringRowColumn(0,0,"Loading.");
+	_delay_ms(700);
+	LCD_displayStringRowColumn(0,8,".");
+	_delay_ms(700);
+	LCD_displayStringRowColumn(0,9,".");
+	_delay_ms(700);
+	LCD_displayStringRowColumn(0,10,".");
+	_delay_ms(700);
+	LCD_displayStringRowColumn(0,11,".");
+	_delay_ms(700);
+	LCD_clearScreen();
+	LCD_displayString("Distance= ");
+	LCD_displayStringRowColumn(1,0,"ADC Value = ");
+
+	while(1){
+
+			distance = ULTRASONIC_readDistance();
+
+			LCD_moveCursor(0,10);
+
+			LCD_intgerToString(distance);
+
+			if(distance < 10 )
+				LCD_displayString("  ");
+			else if (distance < 100)
+				LCD_displayString(" ");
+
+			LCD_displayString(" cm");
+		}
+}

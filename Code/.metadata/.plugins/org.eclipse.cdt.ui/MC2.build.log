@@ -1,0 +1,20 @@
+20:40:59 **** Build of configuration Debug for project MC2 ****
+make all 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega32 MC2.elf
+AVR Memory Usage
+----------------
+Device: atmega32
+
+Program:    9928 bytes (30.3% Full)
+(.text + .data + .bootloader)
+
+Data:         25 bytes (1.2% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+
+20:40:59 Build Finished. 0 errors, 0 warnings. (took 207ms)
+
